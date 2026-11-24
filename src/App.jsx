@@ -1,10 +1,12 @@
 import './App.css'
-import { useState} from 'react';
+import { useState, useEffect} from 'react';
 function App() {
   const [search, setsearch] = useState("");
   const [arr, setarr] = useState([]);
   const [hassearched, sethassearched] = useState(false);
   const [random, setrandom] = useState([]);
+  const [ing, seting] = useState("");
+  const [searching, setsearching] = useState([]);
 
   function func(e) {
     e.preventDefault();
@@ -21,6 +23,14 @@ function App() {
    fetch(`https://www.themealdb.com/api/json/v1/1/random.php`)
    .then((res) => res.json())
    .then((obj) => setrandom(obj.meals[0]))
+  }
+
+  function Ingridient (e) {
+    e.preventDefault();
+    
+    fetch(`https://www.themealdb.com/api/json/v1/1/filter.php?i=${encodeURIComponent(ing)}`)
+    .then((res) => res.json())
+    .then((obj) => setsearching(obj.meals || []))
   }
 
   return (
@@ -43,6 +53,19 @@ function App() {
       <h2>{random.strMeal}</h2>
     </div>
         
+    <div>
+      <h2>Search by Ingridient</h2>
+      <form onSubmit={Ingridient}>
+         <input value={ing} onChange={(type) => seting(type.target.value)}></input>
+         <button type="submit">Search</button>
+      </form>
+
+      {searching.map((arr) => (
+        <div key={arr.idMeal}>
+          {arr.strMeal}
+        </div>
+      ))}
+    </div>
     </>
   )
 }
